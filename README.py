@@ -103,5 +103,12 @@ def main():
 def close_chatbot():
     st.session_state['chatbot_visible'] = False
 
+html("""
+<script>
+document.getElementById('close-chat-btn').addEventListener('click', function() {
+    fetch('/_stcore/stream?element_type=close_chat').then(response => window.location.reload());
+});
+</script>
+""", height=0)
 if __name__ == "__main__":
     main()
