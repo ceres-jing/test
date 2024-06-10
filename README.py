@@ -1,114 +1,56 @@
-
-
-
 import streamlit as st
+import streamlit.components.v1 as components
 
+# Function to display the main content
 def main():
-    st.title("Chatbot Interface")
+    st.title("Streamlit Chatbox Pop-up Example")
+    
+    # State variable to control chatbox visibility
+    if 'chatbox_visible' not in st.session_state:
+        st.session_state.chatbox_visible = False
 
-    # Initialize session state for chatbot visibility
-    if 'chatbot_visible' not in st.session_state:
-        st.session_state['chatbot_visible'] = False
+    # Button to show the chatbox
+    if st.button("Open Chatbox"):
+        st.session_state.chatbox_visible = True
 
-    # CSS for the button and chat window
-    st.markdown("""
-        <style>
-        .open-chat-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .chat-window {
-            position: fixed;
-            bottom: 0;
-            right: 0;
-            width: 300px;
-            height: 400px;
-            border: 1px solid #ccc;
-            background-color: white;
-            padding: 10px;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-        }
-        .chat-window-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .chat-window-content {
-            flex: 1;
-            overflow-y: auto;
-            border: 1px solid #ccc;
-            padding: 5px;
-            background-color: #f9f9f9;
-            margin-top: 10px;
-            margin-bottom: 10px;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
-    # Button to open the chatbot
-    if not st.session_state['chatbot_visible']:
-        if st.button("Open Chatbot", key="open_chat"):
-            st.session_state['chatbot_visible'] = True
-
-    if st.session_state['chatbot_visible']:
-        # Chat window
-        st.markdown("""
-            <div class="chat-window">
-                <div class="chat-window-header">
-                    <h4>Chatbot</h4>
-                    <button id="close-chat-btn" style="background: none; border: none; font-size: 16px; cursor: pointer;">&times;</button>
-                </div>
-                <div class="chat-window-content" id="chat-window">
-                    <!-- Chat content will go here -->
-                </div>
-                <textarea id="user-input" style="width: 100%;"></textarea>
-                <button id="send-btn" style="width: 100%; margin-top: 5px;">Send</button>
+    # Chatbox content
+    if st.session_state.chatbox_visible:
+        components.html("""
+        <div id="chatbox" style="position: fixed; bottom: 10px; right: 10px; width: 300px; background-color: white; border: 1px solid #ccc; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+            <div style="background-color: #007bff; color: white; padding: 10px; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                <h4 style="margin: 0; display: inline;">Chatbox</h4>
+                <button id="close-chatbox-btn" style="background: none; border: none; color: white; float: right; cursor: pointer;">&times;</button>
             </div>
-        """, unsafe_allow_html=True)
-
-        # JavaScript to handle chat window interactions
-        st.markdown("""
-            <script>
-            document.getElementById('close-chat-btn').addEventListener('click', function() {
-                fetch('/close_chat').then(response => window.location.reload());
+            <div id="chat-content" style="padding: 10px; height: 200px; overflow-y: auto;">
+                <!-- Chat messages will appear here -->
+            </div>
+            <div style="padding: 10px; border-top: 1px solid #ccc;">
+                <input type="text" id="chat-input" placeholder="Type a message..." style="width: calc(100% - 20px); padding: 5px;">
+                <button id="send-btn" style="padding: 5px 10px; margin-top: 5px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Send</button>
+            </div>
+        </div>
+        <script>
+            document.getElementById('close-chatbox-btn').addEventListener('click', function() {
+                fetch('/close_chatbox').then(response => window.location.reload());
             });
+
             document.getElementById('send-btn').addEventListener('click', function() {
-                const userInput = document.getElementById('user-input').value;
-                if (userInput.trim() !== '') {
-                    const chatWindow = document.getElementById('chat-window');
-                    const userMessage = document.createElement('div');
-                    userMessage.textContent = `You: ${userInput}`;
-                    chatWindow.appendChild(userMessage);
-                    chatWindow.scrollTop = chatWindow.scrollHeight;
-                    document.getElementById('user-input').value = '';
+                let chatInput = document.getElementById('chat-input');
+                let chatContent = document.getElementById('chat-content');
+                let message = chatInput.value;
+                if (message.trim() !== "") {
+                    chatContent.innerHTML += "<p>" + message + "</p>";
+                    chatInput.value = "";
+                    chatContent.scrollTop = chatContent.scrollHeight;
                 }
             });
-            </script>
-        """, unsafe_allow_html=True)
+        </script>
+        """, height=400)
 
-        # Add a button to toggle the chatbot visibility
-        st.button("Close Chatbot", key="close_chat", on_click=close_chatbot)
+    # Endpoint to handle closing the chatbox
+    if st.experimental_get_query_params().get("close_chatbox"):
+        st.session_state.chatbox_visible = False
+        st.experimental_set_query_params(close_chatbox=None)
 
-# Function to close the chatbot
-def close_chatbot():
-    st.session_state['chatbot_visible'] = False
-
-html("""
-<script>
-document.getElementById('close-chat-btn').addEventListener('click', function() {
-    fetch('/_stcore/stream?element_type=close_chat').then(response => window.location.reload());
-});
-</script>
-""", height=0)
 if __name__ == "__main__":
     main()
