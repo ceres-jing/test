@@ -84,3 +84,66 @@ if go_button:
 # Closing the chat popup container
 st.markdown('</div></div>', unsafe_allow_html=True)
 
+
+
+
+import streamlit as st
+import streamlit.components.v1 as components
+
+if 'show_popup' not in st.session_state:
+    st.session_state.show_popup = False
+
+# Function to toggle the pop-up visibility
+def toggle_popup():
+    st.session_state.show_popup = not st.session_state.show_popup
+
+# Main app content
+st.title("Chat Application")
+
+# Button to open the chatbox pop-up
+if st.button("Open Chatbox"):
+    toggle_popup()
+
+# Simulate pop-up window for chatbox
+if st.session_state.show_popup:
+    st.markdown("""
+        <style>
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            padding: 20px;
+            background-color: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 5px 15px rgba(0,0,0,.5);
+            z-index: 1000;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 500;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown('<div class="overlay"></div>', unsafe_allow_html=True)
+    st.markdown('<div class="modal">', unsafe_allow_html=True)
+    
+    st.write("### Chatbox")
+    user_input = st.text_input("Your message:")
+    if user_input:
+        st.write(f"You: {user_input}")
+    
+    # Close button
+    if st.button("Close"):
+        toggle_popup()
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
