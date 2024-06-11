@@ -1,56 +1,72 @@
 import streamlit as st
-import streamlit.components.v1 as components
 
-# Function to display the main content
+# Function to display IT policies in a card format
+def display_policy_card(title, content, anchor):
+    st.markdown(f"""
+    <div id="{anchor}" style="background-color: white; padding: 20px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin: 10px;">
+        <h3>{title}</h3>
+        <p>{content}</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+# Main function
 def main():
-    st.title("Streamlit Chatbox Pop-up Example")
-    
-    # State variable to control chatbox visibility
-    if 'chatbox_visible' not in st.session_state:
-        st.session_state.chatbox_visible = False
+    st.title("Bank IT Policy Classes")
 
-    # Button to show the chatbox
-    if st.button("Open Chatbox"):
-        st.session_state.chatbox_visible = True
+    # Navigation bar
+    st.markdown("""
+    <nav style="background-color: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+        <a href="#security-policy" style="margin-right: 10px;">Security Policy</a>
+        <a href="#data-backup-policy" style="margin-right: 10px;">Data Backup Policy</a>
+        <a href="#access-control-policy" style="margin-right: 10px;">Access Control Policy</a>
+        <a href="#incident-response-policy" style="margin-right: 10px;">Incident Response Policy</a>
+    </nav>
+    """, unsafe_allow_html=True)
 
-    # Chatbox content
-    if st.session_state.chatbox_visible:
-        components.html("""
-        <div id="chatbox" style="position: fixed; bottom: 10px; right: 10px; width: 300px; background-color: white; border: 1px solid #ccc; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-            <div style="background-color: #007bff; color: white; padding: 10px; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <h4 style="margin: 0; display: inline;">Chatbox</h4>
-                <button id="close-chatbox-btn" style="background: none; border: none; color: white; float: right; cursor: pointer;">&times;</button>
-            </div>
-            <div id="chat-content" style="padding: 10px; height: 200px; overflow-y: auto;">
-                <!-- Chat messages will appear here -->
-            </div>
-            <div style="padding: 10px; border-top: 1px solid #ccc;">
-                <input type="text" id="chat-input" placeholder="Type a message..." style="width: calc(100% - 20px); padding: 5px;">
-                <button id="send-btn" style="padding: 5px 10px; margin-top: 5px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Send</button>
-            </div>
-        </div>
-        <script>
-            document.getElementById('close-chatbox-btn').addEventListener('click', function() {
-                fetch('/close_chatbox').then(response => window.location.reload());
-            });
+    # Display different policy sections based on navigation
+    st.header("Security Policy")
+    display_policy_card("Security Policy", """
+    - Ensure data confidentiality
+    - Implement strong authentication mechanisms
+    - Regular security audits and compliance checks
+    """, "security-policy")
 
-            document.getElementById('send-btn').addEventListener('click', function() {
-                let chatInput = document.getElementById('chat-input');
-                let chatContent = document.getElementById('chat-content');
-                let message = chatInput.value;
-                if (message.trim() !== "") {
-                    chatContent.innerHTML += "<p>" + message + "</p>";
-                    chatInput.value = "";
-                    chatContent.scrollTop = chatContent.scrollHeight;
-                }
-            });
-        </script>
-        """, height=400)
+    st.header("Data Backup Policy")
+    display_policy_card("Data Backup Policy", """
+    - Daily incremental backups
+    - Weekly full backups
+    - Secure offsite storage for backups
+    """, "data-backup-policy")
 
-    # Endpoint to handle closing the chatbox
-    if st.experimental_get_query_params().get("close_chatbox"):
-        st.session_state.chatbox_visible = False
-        st.experimental_set_query_params(close_chatbox=None)
+    st.header("Access Control Policy")
+    display_policy_card("Access Control Policy", """
+    - Role-based access control
+    - Regular review of access permissions
+    - Multi-factor authentication for sensitive data
+    """, "access-control-policy")
+
+    st.header("Incident Response Policy")
+    display_policy_card("Incident Response Policy", """
+    - Immediate reporting of security incidents
+    - Pre-defined incident response team
+    - Regular incident response drills and training
+    """, "incident-response-policy")
+
+    # Display horizontally parallel sections
+    st.write("## Policies Overview")
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        display_policy_card("Security Policy", "Ensure data confidentiality and implement strong authentication mechanisms.", "security-policy")
+
+    with col2:
+        display_policy_card("Data Backup Policy", "Daily incremental backups and weekly full backups with secure offsite storage.", "data-backup-policy")
+
+    with col3:
+        display_policy_card("Access Control Policy", "Role-based access control and regular review of access permissions.", "access-control-policy")
+
+    with col4:
+        display_policy_card("Incident Response Policy", "Immediate reporting of security incidents and pre-defined incident response team.", "incident-response-policy")
 
 if __name__ == "__main__":
     main()
