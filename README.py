@@ -11,6 +11,30 @@ def display_policy_card(title, content):
 
 # Function to display the main content
 def main():
+
+    st.markdown("""
+    <style>
+    .policy-card {
+        background-color: white;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        margin: 10px;
+        width: calc(100% - 40px);
+        height: 200px; /* Adjust height as needed */
+        display: inline-block;
+        vertical-align: top;
+    }
+    .policy-card h3 {
+        margin-top: 0;
+    }
+    .policy-card p {
+        margin: 0;
+        text-align: justify; /* Align text consistently */
+    }
+    </style>
+    """, unsafe_allow_html=True)
     st.title("Bank IT Policy Classes")
 
     # Navigation bar
